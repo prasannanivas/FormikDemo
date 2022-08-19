@@ -30,6 +30,8 @@ function App() {
   const onSubmit = (e, d) => {
     console.log("submitting", e, d);
     d.setSubmitting(true);
+    d.resetForm();
+    setInit(null);
   };
 
   const validate = (values) => {
@@ -75,6 +77,7 @@ function App() {
         onSubmit={onSubmit}
         validate={validate}
         onReset={(props) => {
+          setInit(null);
           console.log("ref", props);
         }}
         enableReinitialize //important for reinitialising data into forms. ie loading already existing data into
