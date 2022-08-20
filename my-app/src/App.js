@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import ErrorText from "./ErrorText";
 
 function App() {
+  const select_options = ["Billa", "Ranga", "baasha", "oomai viligal"];
   const formValues = {
     name: "Billa", //make sure this name is same name in the "name" field of input
     pass: "Ranga",
@@ -13,11 +14,15 @@ function App() {
     },
     phoneNumbers: ["999999999999", "8888888888888888"],
     friends: ["Bila", "Ranga", "Baasha"],
+    tb: "typed",
+    selector: "Billa",
+    radi: "",
+    cb: ["baasha"],
   };
 
   const [init, setInit] = useState(null);
   const initialValues = {
-    name: "", //make sure this name is same name in the "name" field of input
+    name: "",
     pass: "",
     social: {
       fb: "",
@@ -25,13 +30,16 @@ function App() {
     },
     phoneNumbers: ["", ""],
     friends: [""],
+    typed: "",
+    selector: "",
+    radi: "",
+    cb: "",
   };
 
   const onSubmit = (e, d) => {
     console.log("submitting", e, d);
-    d.setSubmitting(true);
-    d.resetForm();
     setInit(null);
+    d.resetForm();
   };
 
   const validate = (values) => {
@@ -43,6 +51,12 @@ function App() {
       errors.pass = "Required";
     } else if (values.pass.length < 5) {
       errors.pass = "Too short";
+    }
+    if (!values.selector) {
+      errors.selector = "Select an option";
+    }
+    if (!values.radi) {
+      errors.radi = "Please select something";
     }
 
     return errors; //must return error object
@@ -65,6 +79,7 @@ function App() {
         name: true,
         phoneNumbers: [true, true],
         social: { fb: true },
+        selector: true,
       });
       formik.validateForm();
     }
@@ -77,12 +92,12 @@ function App() {
         onSubmit={onSubmit}
         validate={validate}
         onReset={(props) => {
-          setInit(null);
-          console.log("ref", props);
+          console.log("reset", props);
         }}
         enableReinitialize //important for reinitialising data into forms. ie loading already existing data into
       >
         {(formik) => {
+          console.log("ffff", formik.values.cb);
           return (
             <Form>
               <Field type="text" name="name" placeholder="name" />
@@ -143,6 +158,57 @@ function App() {
                   });
                 }}
               </FieldArray>
+              <br />
+              <Field as="textarea" name="tb" placeholder="type something" />
+              <br />
+
+              <Field as="select" name="selector">
+                <option name="selector" value="">
+                  Please select something
+                </option>
+                {select_options.map((opt) => {
+                  return (
+                    <option name="selector" value={opt}>
+                      {opt}
+                    </option>
+                  );
+                })}
+              </Field>
+              <br />
+              <ErrorMessage
+                name="selector"
+                component={ErrorText}
+              ></ErrorMessage>
+
+              <h3>Select an option</h3>
+              {select_options.map((opt) => {
+                return (
+                  <label>
+                    {opt}
+                    <Field type="radio" name="radi" value={opt} />
+                    <br />
+                  </label>
+                );
+              })}
+              <ErrorMessage name="radi" component={ErrorText}></ErrorMessage>
+
+              <h3>Select an option</h3>
+              {select_options.map((opt) => {
+                return (
+                  <label>
+                    {opt}
+                    <Field
+                      type="checkbox"
+                      name="cb"
+                      value={opt}
+                      checked={formik.values.cb?.includes(opt)}
+                    />
+                    <br />
+                  </label>
+                );
+              })}
+              <ErrorMessage name="cb" component={ErrorText}></ErrorMessage>
+
               <button
                 type="button"
                 onClick={() => validateHelper(formik, "pass", true)}
